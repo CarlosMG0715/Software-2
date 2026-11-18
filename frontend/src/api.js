@@ -22,4 +22,8 @@ export async function api(path, { method = "GET", body, blob } = {}) {
   if (!r.ok) {
     let d = {};
     try { d = await r.json(); } catch {}
-    throw { detail:
+    throw { detail: d.detail || "Ocurrió un error.", errores: d.errores || [] };
+  }
+  if (blob) return r.blob();
+  return r.status === 204 ? null : r.json();
+}
