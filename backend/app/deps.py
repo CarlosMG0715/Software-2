@@ -13,6 +13,8 @@ from .services.consulta_service import ConsultaService
 from .services.metricas_service import MetricasService
 from .services.moderacion_service import ModeracionService
 from .services.resena_service import ResenaService
+from .repositories.catalogo import SqlCatalogoRepository
+from .services.admin_service import AdminService
 
 _bearer = HTTPBearer(auto_error=False)
 
@@ -61,3 +63,5 @@ def get_moderacion_service(db: Session = Depends(get_db)) -> ModeracionService:
 
 def get_metricas_service(db: Session = Depends(get_db)) -> MetricasService:
     return MetricasService(SqlProfesorRepository(db), SqlResenaRepository(db))
+def get_admin_service(db: Session = Depends(get_db)) -> AdminService:
+    return AdminService(SqlCatalogoRepository(db), SqlAuditRepository(db))

@@ -3,7 +3,9 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from .config import settings
 from .errors import registrar_manejadores
-from .routers import asignaturas, auth, docentes, metricas, moderacion, resenas
+
+from .routers import admin, asignaturas, auth, docentes, metricas, moderacion, resenas
+
 
 app = FastAPI(title="Evaluación Docente Anónima", version="1.0.0")
 
@@ -16,5 +18,6 @@ app.add_middleware(
 )
 registrar_manejadores(app)
 
-for r in (auth.router, docentes.router, asignaturas.router, resenas.router, moderacion.router, metricas.router):
+
+for r in (auth.router, docentes.router, asignaturas.router, resenas.router, moderacion.router, metricas.router, admin.router):
     app.include_router(r, prefix="/api")
