@@ -21,7 +21,6 @@ services:
       HASH_SALT: cambia-esta-sal-larga
       DOMINIO_INSTITUCIONAL: universidad.edu.co
       CORS_ORIGINS: http://localhost:5173
-      MOSTRAR_TOKEN_EN_RESPUESTA: "true"
     depends_on:
       db:
         condition: service_healthy

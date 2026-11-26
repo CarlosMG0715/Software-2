@@ -25,10 +25,6 @@ def hash_anonimo(usuario_id: int) -> str:
     return hmac.new(settings.hash_salt.encode(), f"usuario:{usuario_id}".encode(), hashlib.sha256).hexdigest()
 
 
-def huella(password_hash: str) -> str:
-    return hashlib.sha256(password_hash.encode()).hexdigest()[:16]
-
-
 def crear_token(sub: int, proposito: str, minutos: int, **extra) -> str:
     ahora = datetime.now(timezone.utc)
     payload = {"sub": str(sub), "prp": proposito, "iat": ahora, "exp": ahora + timedelta(minutes=minutos), **extra}

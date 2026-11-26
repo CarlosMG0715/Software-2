@@ -1,0 +1,14 @@
+.login-pagina { display: grid; min-height: min(70vh, 700px); place-items: center; }
+.login-pagina .estrecha { width: min(100%, 520px); margin: 16px auto; }
+.fuerza-clave { margin: -4px 0 14px; color: var(--texto-secundario); font-size: .85rem; }
+.fuerza-clave__encabezado { display: flex; justify-content: space-between; gap: 12px; }
+.fuerza-clave__encabezado strong { color: var(--texto); }
+.fuerza-clave__barra { display: flex; gap: 5px; margin-top: 7px; }
+.fuerza-clave__barra span { height: 5px; flex: 1; border-radius: 5px; background: var(--borde); }
+.fuerza-clave__barra span.cumple { background: #16835d; }
+.fuerza-clave__reglas { display: flex; flex-wrap: wrap; gap: 4px 14px; margin: 8px 0 0; padding: 0; list-style: none; }
+.fuerza-clave__reglas li::before { content: "○ "; }
+.fuerza-clave__reglas li.cumple { color: #16835d; }
+.fuerza-clave__reglas li.cumple::before { content: "✓ "; }
+.enlaces { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; }
+.enlaces .link { min-height: 44px; display: inline-flex; align-items: center; color: var(--az); }

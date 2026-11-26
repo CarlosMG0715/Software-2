@@ -1,7 +1,11 @@
+import logging
+
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
+
+logger = logging.getLogger("uvicorn.error")
 
 
 class AppError(Exception):
@@ -59,4 +63,5 @@ def registrar_manejadores(app: FastAPI) -> None:
 
     @app.exception_handler(Exception)
     async def _inesperado(request: Request, exc: Exception):
+        logger.exception("Error inesperado en %s %s", request.method, request.url.path)
         return JSONResponse({"detail": "Error interno del servidor."}, status_code=500)

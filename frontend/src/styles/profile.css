@@ -1,0 +1,24 @@
+.perfil-boceto { max-width: 900px; margin: 18px auto; }
+.perfil-boceto__encabezado { margin-bottom: 20px; }
+.perfil-boceto__encabezado h1 { margin: 6px 0; }
+.perfil-boceto__encabezado p, .perfil-identidad p, .perfil-seccion p { color: var(--texto-secundario); }
+.perfil-identidad { flex-direction: row; align-items: center; gap: 16px; padding: 20px; }
+.perfil-identidad h2 { margin: 0 0 4px; }
+.perfil-identidad p { margin: 0 0 10px; overflow-wrap: anywhere; }
+.perfil-identidad__avatar { display: grid; width: 64px; height: 64px; flex: 0 0 64px; place-items: center; border-radius: 50%; background: var(--az); color: #fff; font-size: 1.25rem; font-weight: 700; }
+.perfil-cuadricula { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.perfil-seccion { align-items: flex-start; min-height: 190px; padding: 18px; }
+.perfil-seccion--wide { grid-column: 1 / -1; }
+.perfil-seccion form { width: 100%; }
+.perfil-seccion form .primario { margin-top: 2px; }
+.perfil-seccion__icono { display: grid; width: 34px; height: 34px; place-items: center; border-radius: 10px; background: var(--gris); color: var(--az); font-size: .75rem; font-weight: 700; }
+.perfil-seccion h2 { margin: 6px 0 0; font-size: 1.1rem; }
+.perfil-seccion p { margin: 0 0 10px; }
+.perfil-seccion button:disabled { opacity: .55; cursor: not-allowed; }
+.perfil-coincidencia { margin: -4px 0 12px !important; font-size: .9rem; }
+.perfil-coincidencia.correcta { color: var(--verde, #258454); }
+.perfil-boceto__nota { color: var(--texto-secundario); font-size: .9rem; }
+
+@media (max-width: 560px) {
+  .perfil-cuadricula { grid-template-columns: 1fr; }
+}

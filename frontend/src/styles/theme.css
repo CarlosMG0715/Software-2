@@ -1,0 +1,44 @@
+/* Shared color tokens keep light and dark themes consistent across routes. */
+:root {
+  color-scheme: light;
+  --az: #1e3a8a;
+  --rojo: #b91c1c;
+  --gris: #f1f5f9;
+  --fondo: #fff;
+  --superficie: #fff;
+  --texto: #0f172a;
+  --texto-secundario: #475569;
+  --borde: #cbd5e1;
+  --borde-control: #94a3b8;
+  font-family: system-ui, sans-serif;
+  color: var(--texto);
+}
+
+:root[data-tema="oscuro"] {
+  color-scheme: dark;
+  --az: #3b5db5;
+  --rojo: #f87171;
+  --gris: #263449;
+  --fondo: #0f172a;
+  --superficie: #182438;
+  --texto: #e2e8f0;
+  --texto-secundario: #a8b5c8;
+  --borde: #3a4a60;
+  --borde-control: #53657e;
+}
+
+/* Follow the device preference only when the user has chosen system mode. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-tema]) {
+    color-scheme: dark;
+    --az: #3b5db5;
+    --rojo: #f87171;
+    --gris: #263449;
+    --fondo: #0f172a;
+    --superficie: #182438;
+    --texto: #e2e8f0;
+    --texto-secundario: #a8b5c8;
+    --borde: #3a4a60;
+    --borde-control: #53657e;
+  }
+}

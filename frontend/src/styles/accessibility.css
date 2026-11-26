@@ -1,0 +1,13 @@
+:focus-visible { outline: 3px solid #f59e0b; outline-offset: 2px; }
+
+.saltar { position: absolute; left: -999px; }
+.saltar:focus { top: 8px; left: 8px; z-index: 9; padding: 8px; background: var(--superficie); color: var(--texto); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    transition-duration: .01ms !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}

@@ -1,0 +1,42 @@
+body {
+  margin: 0;
+  background: var(--fondo);
+  color: var(--texto);
+  transition: background-color .18s ease, color .18s ease;
+}
+
+a, button, input, select, textarea, summary {
+  min-height: 44px;
+  box-sizing: border-box;
+  font: inherit;
+}
+
+input, select, textarea {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid var(--borde-control);
+  border-radius: 8px;
+  background: var(--superficie);
+  color: var(--texto);
+}
+
+input::placeholder, textarea::placeholder { color: var(--texto-secundario); }
+input[type=checkbox] { width: 24px; min-height: 24px; accent-color: var(--az); }
+fieldset { border: 1px solid var(--borde); border-radius: 8px; margin: 0 0 12px; }
+
+button, .boton {
+  display: inline-flex;
+  align-items: center;
+  padding: 0 14px;
+  border: 1px solid var(--borde-control);
+  border-radius: 8px;
+  background: var(--superficie);
+  color: var(--texto);
+  cursor: pointer;
+  text-decoration: none;
+}
+
+button.primario, .boton.primario { background: var(--az); color: #fff; border-color: var(--az); }
+button.peligro { color: var(--rojo); border-color: var(--rojo); }
+button.link { border: 0; background: none; color: var(--az); text-decoration: underline; }
+button.sel { background: var(--az); color: #fff; }

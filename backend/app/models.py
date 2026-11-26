@@ -47,8 +47,8 @@ class Usuario(Base):
     __tablename__ = "usuarios"
     id: Mapped[int] = mapped_column(primary_key=True)
     correo: Mapped[str] = mapped_column(String(255), unique=True, index=True)
+    nombre: Mapped[str] = mapped_column(String(150), default="", server_default="")
     password_hash: Mapped[str] = mapped_column(String(255))
-    verificado: Mapped[bool] = mapped_column(Boolean, default=False, server_default="false")
     rol: Mapped[str] = mapped_column(String(20), default=Rol.ESTUDIANTE.value, server_default="ESTUDIANTE")
     intentos_fallidos: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
     bloqueado_hasta: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)

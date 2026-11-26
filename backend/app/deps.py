@@ -22,7 +22,7 @@ def usuario_actual(cred: HTTPAuthorizationCredentials | None = Depends(_bearer),
         raise AppError(401, "Debes iniciar sesión.")
     payload = leer_token(cred.credentials, "acceso", status=401, campo=None)
     usuario = db.get(Usuario, int(payload["sub"]))
-    if not usuario or not usuario.verificado:
+    if not usuario:
         raise AppError(401, "Tu sesión no es válida. Inicia sesión de nuevo.")
     return usuario
 

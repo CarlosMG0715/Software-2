@@ -4,7 +4,7 @@ Entorno/
 # Build output
 dist/
 *.local
-
+AGENTS.md
 # Environment variables
 .env
 .env.*
@@ -41,3 +41,6 @@ coverage/
 .DS_Store
 Thumbs.db
 desktop.ini
+
+#Python caches
+__pycache__/

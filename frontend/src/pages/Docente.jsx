@@ -40,9 +40,10 @@ export default function Docente() {
   if (!d) return <p>Cargando…</p>;
   const est = user?.rol === "ESTUDIANTE";
   const { promedios: p } = d;
+  const resenasVisibles = user ? d.resenas : d.resenas.slice(0, 2);
   return (
     <>
-      <h1>{d.docente.nombre}</h1>
+      <h1 className={user ? "" : "nombre-reservado"} aria-label={user ? undefined : "Nombre reservado; regístrate para verlo"}>{d.docente.nombre}</h1>
       <p>{d.docente.departamento} · {d.docente.facultad}</p>
       <div className="tarjeta">
         <strong>★ {p.general}</strong> general · Claridad {p.claridad} · Exigencia {p.exigencia} · Puntualidad {p.puntualidad}
@@ -56,9 +57,9 @@ export default function Docente() {
         ))}
       </ul>
       <h2>Reseñas</h2>
-      {d.resenas.length === 0 ? <p>Aún no hay reseñas.</p> : (
+      {resenasVisibles.length === 0 ? <p>Aún no hay reseñas.</p> : (
         <ul className="lista">
-          {d.resenas.map((r) => (
+          {resenasVisibles.map((r) => (
             <TarjetaResena key={r.id} r={r} acciones={est && (
               <div className="fila">
                 <button onClick={() => votar(r, true)}>👍 Útil</button>
@@ -69,6 +70,11 @@ export default function Docente() {
           ))}
         </ul>
       )}
+      {!user && <aside className="registro-prompt">
+        <strong>¿Quieres ver más?</strong>
+        <p>Regístrate para ver más reseñas y nombres de profesores.</p>
+        <Link className="boton primario" to="/login?modo=registro">Crear cuenta</Link>
+      </aside>}
     </>
   );
 }

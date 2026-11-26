@@ -1,0 +1,38 @@
+.tarjeta {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 10px 0;
+  padding: 12px 14px;
+  border: 1px solid var(--borde);
+  border-radius: 10px;
+  background: var(--superficie);
+}
+
+.lista, .inline { list-style: none; padding: 0; margin: 0; }
+.inline { display: flex; flex-wrap: wrap; gap: 8px; }
+.campo { display: flex; flex-direction: column; gap: 4px; margin-bottom: 12px; }
+.campo small, main small, main .muted { color: var(--texto-secundario); }
+.campo.error input, .campo.error select, .campo.error textarea, .campo.error .stars { border-color: var(--rojo); outline: 2px solid var(--rojo); border-radius: 8px; }
+.msg { color: var(--rojo); font-size: .9rem; }
+.check { display: flex; gap: 8px; align-items: center; min-height: 44px; }
+.stars { display: flex; gap: 4px; }
+.stars button { width: 44px; justify-content: center; padding: 0; color: #94a3b8; font-size: 1.8rem; }
+.stars button.on { color: #f59e0b; }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.tags span { padding: 2px 10px; border-radius: 12px; background: var(--gris); font-size: .85rem; }
+.estado { padding: 2px 10px; border-radius: 12px; background: var(--gris); font-size: .85rem; }
+.estado.oculta, .estado.rechazada { background: #fee2e2; color: #991b1b; }
+.estado.aprobada, .estado.visible { background: #dcfce7; color: #166534; }
+:root[data-tema="oscuro"] .estado.oculta, :root[data-tema="oscuro"] .estado.rechazada { background: #542b34; color: #fecaca; }
+:root[data-tema="oscuro"] .estado.aprobada, :root[data-tema="oscuro"] .estado.visible { background: #174333; color: #bbf7d0; }
+
+.toasts { position: fixed; bottom: 12px; left: 50%; z-index: 20; display: flex; flex-direction: column; gap: 8px; transform: translateX(-50%); }
+.toast { display: flex; gap: 12px; align-items: center; padding: 6px 12px; border-radius: 10px; background: #0f172a; color: #fff; }
+.toast button { border: 0; background: none; color: #fbbf24; font-weight: 700; }
+
+table { width: 100%; border-collapse: collapse; }
+th, td { padding: 8px; border-bottom: 1px solid var(--borde); text-align: left; }
+.barra { display: grid; grid-template-columns: 160px 1fr 30px; gap: 8px; align-items: center; margin: 6px 0; }
+.barra div { height: 18px; border-radius: 6px; background: var(--gris); }
+.barra i { display: block; height: 100%; border-radius: 6px; background: var(--az); }

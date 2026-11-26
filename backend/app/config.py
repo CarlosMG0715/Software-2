@@ -11,10 +11,8 @@ class Settings(BaseSettings):
     dominio_institucional: str = "universidad.edu.co"
     cors_origins: str = "http://localhost:5173"
     access_token_minutes: int = 60
-    token_temporal_minutes: int = 30
     max_intentos: int = 5
     minutos_bloqueo: int = 15
-    mostrar_token_en_respuesta: bool = True  # solo desarrollo: simula el envío de correo
 
     @field_validator("database_url")
     @classmethod

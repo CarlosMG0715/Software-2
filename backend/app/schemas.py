@@ -4,13 +4,10 @@ from .models import TAGS_PREDEFINIDOS
 
 
 class RegistroIn(BaseModel):
+    nombre: str = Field(min_length=2, max_length=150)
     correo: EmailStr
     password: str = Field(min_length=8, max_length=72)
     acepta_ley_1581: bool
-
-
-class TokenIn(BaseModel):
-    token: str = Field(min_length=10)
 
 
 class LoginIn(BaseModel):
@@ -18,18 +15,21 @@ class LoginIn(BaseModel):
     password: str = Field(min_length=1, max_length=72)
 
 
-class RecuperarIn(BaseModel):
-    correo: str | None = Field(default=None, max_length=255)
-    token: str | None = None
-    nueva_password: str | None = Field(default=None, min_length=8, max_length=72)
+class PerfilActualizarIn(BaseModel):
+    model_config = ConfigDict(str_strip_whitespace=True)
+
+    nombre: str = Field(min_length=2, max_length=150)
+    correo: EmailStr
+
+
+class PasswordCambiarIn(BaseModel):
+    password: str = Field(min_length=8, max_length=72)
+    repetir: str = Field(min_length=8, max_length=72)
 
     @model_validator(mode="after")
-    def _uno_u_otro(self):
-        if self.token:
-            if not self.nueva_password:
-                raise ValueError("Ingresa la nueva contraseña.")
-        elif not self.correo:
-            raise ValueError("Ingresa tu correo para recibir el token.")
+    def _coinciden(self):
+        if self.password != self.repetir:
+            raise ValueError("Las contraseñas no coinciden.")
         return self
 
 
