@@ -9,7 +9,6 @@ import Panel from "./pages/Panel.jsx";
 import Moderacion from "./pages/Moderacion.jsx";
 import Metricas from "./pages/Metricas.jsx";
 import Ayuda from "./pages/Ayuda.jsx";
-import Admin from "./pages/admin.jsx";
 
 export default function App() {
   const { user, logout } = useAuth();
@@ -22,7 +21,6 @@ export default function App() {
         {rol === "ESTUDIANTE" && <Link to="/panel">Mi panel</Link>}
         {(rol === "MODERADOR" || rol === "ADMIN") && <Link to="/moderacion">Moderación</Link>}
         {rol === "DOCENTE" && <Link to="/metricas">Mis métricas</Link>}
-        {rol === "ADMIN" && <Link to="/admin">Administración</Link>}
         <Link to="/ayuda">Ayuda</Link>
         <span className="sp" />
         {user ? (
@@ -43,7 +41,6 @@ export default function App() {
           <Route path="/panel" element={<Protegida roles={["ESTUDIANTE"]}><Panel /></Protegida>} />
           <Route path="/moderacion" element={<Protegida roles={["MODERADOR", "ADMIN"]}><Moderacion /></Protegida>} />
           <Route path="/metricas" element={<Protegida roles={["DOCENTE"]}><Metricas /></Protegida>} />
-          <Route path="/admin" element={<Protegida roles={["ADMIN"]}><Admin /></Protegida>} />
           <Route path="*" element={<p>Página no encontrada.</p>} />
         </Routes>
       </main>
