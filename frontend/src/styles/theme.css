@@ -2,6 +2,7 @@
 :root {
   color-scheme: light;
   --az: #1e3a8a;
+  --nav-fondo: #36566b;
   --rojo: #b91c1c;
   --gris: #f1f5f9;
   --fondo: #fff;
@@ -17,6 +18,7 @@
 :root[data-tema="oscuro"] {
   color-scheme: dark;
   --az: #3b5db5;
+  --nav-fondo: #29414f;
   --rojo: #f87171;
   --gris: #263449;
   --fondo: #0f172a;
@@ -32,6 +34,7 @@
   :root:not([data-tema]) {
     color-scheme: dark;
     --az: #3b5db5;
+    --nav-fondo: #29414f;
     --rojo: #f87171;
     --gris: #263449;
     --fondo: #0f172a;

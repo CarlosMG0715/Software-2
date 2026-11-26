@@ -6,7 +6,7 @@ nav {
   gap: 8px;
   align-items: center;
   padding: 4px 12px;
-  background: var(--az);
+  background: var(--nav-fondo);
 }
 
 nav a, nav button {
