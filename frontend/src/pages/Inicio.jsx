@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { api } from "../api.js";
-import { Promedio, useToast } from "../ui.jsx";
+import { EsqueletoPagina, Promedio, useToast } from "../ui.jsx";
 import { useAuth } from "../auth.jsx";
 
 export default function Inicio() {
@@ -67,7 +67,7 @@ export default function Inicio() {
           <option value="nombre">Nombre</option>
         </select>
       </form>
-      {!items ? <p>Cargando…</p> : items.length === 0 ? <p>Sin resultados.</p> : (
+      {!items ? <EsqueletoPagina tipo="directorio" cantidad={4} /> : items.length === 0 ? <p>Sin resultados.</p> : (
         <ul className="lista directorio-lista">
           {items.map((d) => (
             <li key={d.id} className="tarjeta directorio-card">

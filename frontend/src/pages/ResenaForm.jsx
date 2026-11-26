@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { api } from "../api.js";
-import { Campo, errMap, focusCampo, Stars, useToast } from "../ui.jsx";
+import { Campo, errMap, EsqueletoPagina, focusCampo, Stars, useToast } from "../ui.jsx";
 
 const TAGS = ["Exámenes largos", "Toma asistencia", "Talleres en grupo", "Sube la nota fácil", "Buen material"];
 const CRITERIOS = [
@@ -73,7 +73,7 @@ export default function ResenaForm() {
     if (primero) setTimeout(() => focusCampo(primero), 0);
   }
 
-  if (!ctx) return <p>Cargando…</p>;
+  if (!ctx) return <EsqueletoPagina tipo="formulario" cantidad={3} />;
   return (
     <form onSubmit={enviar} className="tarjeta estrecha" noValidate>
       <h1>{edicion ? "Editar reseña" : "Nueva reseña"}</h1>

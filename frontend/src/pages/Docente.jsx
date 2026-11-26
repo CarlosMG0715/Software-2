@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { api } from "../api.js";
 import { useAuth } from "../auth.jsx";
-import { useToast } from "../ui.jsx";
+import { EsqueletoPagina, useToast } from "../ui.jsx";
 
 export const TarjetaResena = ({ r, acciones }) => (
   <li className="tarjeta">
@@ -37,7 +37,7 @@ export default function Docente() {
   }
 
   if (error) return <p role="alert">{error}</p>;
-  if (!d) return <p>Cargando…</p>;
+  if (!d) return <EsqueletoPagina tipo="detalle" cantidad={3} />;
   const est = user?.rol === "ESTUDIANTE";
   const { promedios: p } = d;
   const resenasVisibles = user ? d.resenas : d.resenas.slice(0, 2);

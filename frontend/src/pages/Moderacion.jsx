@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { api } from "../api.js";
-import { useToast } from "../ui.jsx";
+import { EsqueletoPagina, useToast } from "../ui.jsx";
 import { TarjetaResena } from "./Docente.jsx";
 
 export default function Moderacion() {
@@ -20,7 +20,7 @@ export default function Moderacion() {
     catch (e) { toast(e.detail); }
   }
 
-  if (!items) return <p>Cargando…</p>;
+  if (!items) return <EsqueletoPagina tipo="moderacion" cantidad={3} />;
   return (
     <>
       <h1>Moderación</h1>

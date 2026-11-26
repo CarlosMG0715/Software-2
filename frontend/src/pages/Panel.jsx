@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { api } from "../api.js";
-import { useToast } from "../ui.jsx";
+import { EsqueletoPagina, useToast } from "../ui.jsx";
 import { TarjetaResena } from "./Docente.jsx";
 
 export default function Panel() {
@@ -23,7 +23,7 @@ export default function Panel() {
     }, 5200);
   }
 
-  if (!items) return <p>Cargando…</p>;
+  if (!items) return <EsqueletoPagina tipo="lista" cantidad={3} />;
   return (
     <>
       <h1>Mi panel</h1>

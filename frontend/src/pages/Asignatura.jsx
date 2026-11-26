@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { api } from "../api.js";
+import { EsqueletoPagina } from "../ui.jsx";
 
 export default function Asignatura() {
   const { codigo } = useParams();
@@ -8,7 +9,7 @@ export default function Asignatura() {
   const [error, setError] = useState("");
   useEffect(() => { api(`/asignaturas/${codigo}`).then(setD).catch((e) => setError(e.detail)); }, [codigo]);
   if (error) return <p role="alert">{error}</p>;
-  if (!d) return <p>Cargando…</p>;
+  if (!d) return <EsqueletoPagina tipo="detalle" cantidad={3} />;
   return (
     <>
       <h1>{d.asignatura.codigo} · {d.asignatura.nombre}</h1>

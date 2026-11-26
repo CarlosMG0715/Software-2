@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { api } from "../api.js";
-import { useToast } from "../ui.jsx";
+import { EsqueletoPagina, useToast } from "../ui.jsx";
 
 export default function Metricas() {
   const [m, setM] = useState(null);
@@ -17,7 +17,7 @@ export default function Metricas() {
     } catch (e) { toast(e.detail); }
   }
 
-  if (!m) return <p>Cargando…</p>;
+  if (!m) return <EsqueletoPagina tipo="metricas" cantidad={2} />;
   const max = Math.max(1, ...Object.values(m.tags));
   return (
     <>
