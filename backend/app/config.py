@@ -13,6 +13,8 @@ class Settings(BaseSettings):
     access_token_minutes: int = 60
     max_intentos: int = 5
     minutos_bloqueo: int = 15
+    login_max_intentos_por_ip: int = 60
+    login_ventana_minutos: int = 15
 
     @field_validator("database_url")
     @classmethod
@@ -22,6 +24,13 @@ class Settings(BaseSettings):
             v = "postgresql://" + v[len("postgres://"):]
         if v.startswith("postgresql://"):
             v = "postgresql+psycopg2://" + v[len("postgresql://"):]
+        return v
+
+    @field_validator("login_max_intentos_por_ip", "login_ventana_minutos")
+    @classmethod
+    def _limites_login_positivos(cls, v: int) -> int:
+        if v < 1:
+            raise ValueError("Los límites de login deben ser mayores que cero.")
         return v
 
 

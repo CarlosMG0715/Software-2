@@ -8,9 +8,9 @@ router = APIRouter(prefix="/moderacion", tags=["moderación"])
 moderador = requiere_roles(Rol.MODERADOR, Rol.ADMIN)
 
 
-@router.get("/reportadas")
-def reportadas(_: Usuario = Depends(moderador), s: ModeracionService = Depends(get_moderacion_service)):
-    return s.reportadas()
+@router.get("/cola")
+def cola(_: Usuario = Depends(moderador), s: ModeracionService = Depends(get_moderacion_service)):
+    return s.cola()
 
 
 @router.get("/auditoria")

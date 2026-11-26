@@ -5,7 +5,7 @@ from sqlalchemy import select
 from .config import settings
 from .database import SessionLocal
 from .models import Asignatura, EstadoResena, Oferta, Profesor, Resena, Rol, TAGS_PREDEFINIDOS, Usuario
-from .security import hash_anonimo, hash_password
+from .security import hash_seudonimo, hash_password
 
 
 PROFESORES_INICIALES = [
@@ -96,7 +96,7 @@ def _valores_resena_demo(semilla: str) -> dict:
 
 
 def _asegurar_resenas_demo(db, oferta: Oferta, objetivo: int, estudiantes: list[Usuario]) -> None:
-    estudiantes_por_hash = {hash_anonimo(estudiante.id): estudiante for estudiante in estudiantes}
+    estudiantes_por_hash = {hash_seudonimo(estudiante.id): estudiante for estudiante in estudiantes}
     hashes_demo = list(estudiantes_por_hash)
     existentes = list(db.scalars(select(Resena).where(
         Resena.oferta_id == oferta.id,
@@ -116,7 +116,7 @@ def _asegurar_resenas_demo(db, oferta: Oferta, objetivo: int, estudiantes: list[
     azar = random.Random(f"demo-autores:{oferta.id}")
     seleccionados = azar.sample(disponibles, min(faltantes, len(disponibles)))
     for estudiante in seleccionados:
-        autor_hash = hash_anonimo(estudiante.id)
+        autor_hash = hash_seudonimo(estudiante.id)
         valores = _valores_resena_demo(f"demo-resena:{oferta.id}:{autor_hash}")
         db.add(Resena(
             oferta_id=oferta.id,

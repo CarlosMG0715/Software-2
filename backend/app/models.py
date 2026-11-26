@@ -1,7 +1,7 @@
 import enum
 from datetime import datetime
 
-from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, SmallInteger, String, Text, UniqueConstraint, func
+from sqlalchemy import Boolean, DateTime, ForeignKey, Index, Integer, SmallInteger, String, Text, UniqueConstraint, func
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -16,6 +16,7 @@ class Rol(str, enum.Enum):
 
 
 class EstadoResena(str, enum.Enum):
+    PENDIENTE = "pendiente"
     VISIBLE = "visible"
     OCULTA = "oculta"
     APROBADA = "aprobada"
@@ -69,8 +70,6 @@ class Oferta(Base):
 
 
 class Resena(Base):
-    """Sujeto del patrón Observer: notifica a sus observadores al recibir un reporte."""
-
     __tablename__ = "resenas"
     __table_args__ = (UniqueConstraint("autor_hash", "oferta_id", name="uq_resena_autor_oferta"),)
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -88,17 +87,6 @@ class Resena(Base):
     oferta: Mapped["Oferta"] = relationship(lazy="joined")
     reportes: Mapped[list["Reporte"]] = relationship(cascade="all, delete-orphan", passive_deletes=True)
     votos: Mapped[list["VotoUtilidad"]] = relationship(cascade="all, delete-orphan", passive_deletes=True)
-
-    # --- Observer ---
-    def suscribir(self, observador) -> None:
-        if not hasattr(self, "_observadores"):
-            self._observadores = []
-        self._observadores.append(observador)
-
-    def notificar_reporte(self) -> None:
-        for o in getattr(self, "_observadores", []):
-            o.actualizar(self)
-
 
 class Reporte(Base):
     __tablename__ = "reportes"
@@ -124,3 +112,11 @@ class AuditLog(Base):
     fecha: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     accion: Mapped[str] = mapped_column(String(200))
     ejecutado_por: Mapped[str] = mapped_column(String(255))
+
+
+class LoginRateLimit(Base):
+    __tablename__ = "login_rate_limits"
+    __table_args__ = (Index("ix_login_rate_limits_window_start", "window_start"),)
+    ip_hash: Mapped[str] = mapped_column(String(64), primary_key=True)
+    window_start: Mapped[datetime] = mapped_column(DateTime(timezone=True), primary_key=True)
+    attempts: Mapped[int] = mapped_column(Integer, nullable=False, default=0)

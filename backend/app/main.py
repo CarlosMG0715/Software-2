@@ -5,7 +5,7 @@ from .config import settings
 from .errors import registrar_manejadores
 from .routers import asignaturas, auth, docentes, metricas, moderacion, resenas
 
-app = FastAPI(title="Evaluación Docente Anónima", version="1.0.0")
+app = FastAPI(title="Evaluación de Docentes", version="1.0.0")
 
 app.add_middleware(
     CORSMiddleware,

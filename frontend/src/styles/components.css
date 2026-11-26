@@ -23,8 +23,10 @@
 .tags span { padding: 2px 10px; border-radius: 12px; background: var(--gris); font-size: .85rem; }
 .estado { padding: 2px 10px; border-radius: 12px; background: var(--gris); font-size: .85rem; }
 .estado.oculta, .estado.rechazada { background: #fee2e2; color: #991b1b; }
+.estado.pendiente { background: #fef3c7; color: #854d0e; }
 .estado.aprobada, .estado.visible { background: #dcfce7; color: #166534; }
 :root[data-tema="oscuro"] .estado.oculta, :root[data-tema="oscuro"] .estado.rechazada { background: #542b34; color: #fecaca; }
+:root[data-tema="oscuro"] .estado.pendiente { background: #493b1e; color: #fde68a; }
 :root[data-tema="oscuro"] .estado.aprobada, :root[data-tema="oscuro"] .estado.visible { background: #174333; color: #bbf7d0; }
 
 .toasts { position: fixed; bottom: 12px; left: 50%; z-index: 20; display: flex; flex-direction: column; gap: 8px; transform: translateX(-50%); }

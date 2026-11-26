@@ -64,7 +64,7 @@ export default function ResenaForm() {
         if (edicion) await api(`/resenas/${id}`, { method: "PUT", body });
         else await api("/resenas", { method: "POST", body: { ...body, oferta_id: Number(f.oferta_id) } });
         localStorage.removeItem(clave);
-        toast(edicion ? "Reseña actualizada" : "Reseña publicada. ¡Gracias!");
+        toast(edicion ? "Reseña enviada a moderación para revisión." : "Reseña enviada. Aparecerá cuando sea aprobada.");
         return nav("/panel");
       } catch (x) { e = errMap(x); if (!Object.keys(e).length) { toast(x.detail); return; } }
     }
@@ -78,6 +78,7 @@ export default function ResenaForm() {
     <form onSubmit={enviar} className="tarjeta estrecha" noValidate>
       <h1>{edicion ? "Editar reseña" : "Nueva reseña"}</h1>
       <p><strong>{ctx.titulo}</strong></p>
+      <p className="muted">Las reseñas se publican después de una revisión de moderación.</p>
       {!edicion && (
         <Campo nombre="oferta_id" etiqueta="Materia y periodo" error={err.oferta_id}>
           <select id="oferta_id" data-campo="oferta_id" value={f.oferta_id} onChange={(e) => set("oferta_id", e.target.value)}>

@@ -11,6 +11,7 @@ import Moderacion from "./pages/Moderacion.jsx";
 import Metricas from "./pages/Metricas.jsx";
 import Ayuda from "./pages/Ayuda.jsx";
 import Perfil from "./pages/Perfil.jsx";
+import { useDismissibleMenu } from "./hooks/useDismissibleMenu.js";
 
 export default function App() {
   const { user, logout } = useAuth();
@@ -32,42 +33,8 @@ export default function App() {
     else document.documentElement.dataset.tema = tema;
     try { localStorage.setItem("tema", tema); } catch { /* Storage may be unavailable. */ }
   }, [tema]);
-  useEffect(() => {
-    if (!ruedaAbierta) return undefined;
-    const cerrarFuera = (event) => {
-      if (!ruedaRef.current?.contains(event.target)) setRuedaAbierta(false);
-    };
-    const cerrarEscape = (event) => {
-      if (event.key === "Escape") {
-        setRuedaAbierta(false);
-        botonTemaRef.current?.focus();
-      }
-    };
-    document.addEventListener("pointerdown", cerrarFuera);
-    document.addEventListener("keydown", cerrarEscape);
-    return () => {
-      document.removeEventListener("pointerdown", cerrarFuera);
-      document.removeEventListener("keydown", cerrarEscape);
-    };
-  }, [ruedaAbierta]);
-  useEffect(() => {
-    if (!menuCuentaAbierto) return undefined;
-    const cerrarFuera = (event) => {
-      if (!menuCuentaRef.current?.contains(event.target)) setMenuCuentaAbierto(false);
-    };
-    const cerrarEscape = (event) => {
-      if (event.key === "Escape") {
-        setMenuCuentaAbierto(false);
-        botonCuentaRef.current?.focus();
-      }
-    };
-    document.addEventListener("pointerdown", cerrarFuera);
-    document.addEventListener("keydown", cerrarEscape);
-    return () => {
-      document.removeEventListener("pointerdown", cerrarFuera);
-      document.removeEventListener("keydown", cerrarEscape);
-    };
-  }, [menuCuentaAbierto]);
+  useDismissibleMenu(ruedaAbierta, setRuedaAbierta, ruedaRef, botonTemaRef);
+  useDismissibleMenu(menuCuentaAbierto, setMenuCuentaAbierto, menuCuentaRef, botonCuentaRef);
   const rol = user?.rol;
   const nombreVisible = user?.nombre || user?.correo?.split("@")[0] || "Mi cuenta";
   const opcionesTema = [

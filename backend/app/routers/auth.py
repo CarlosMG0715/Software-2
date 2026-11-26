@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Request
 
 from ..deps import get_auth_service, usuario_actual
 from ..models import Usuario
@@ -14,8 +14,9 @@ def registrar(datos: RegistroIn, s: AuthService = Depends(get_auth_service)):
 
 
 @router.post("/login")
-def login(datos: LoginIn, s: AuthService = Depends(get_auth_service)):
-    return s.login(datos.correo, datos.password)
+def login(datos: LoginIn, request: Request, s: AuthService = Depends(get_auth_service)):
+    ip_cliente = request.client.host if request.client else "desconocida"
+    return s.login(datos.correo, datos.password, ip_cliente)
 
 
 @router.patch("/perfil")

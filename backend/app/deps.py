@@ -5,7 +5,9 @@ from sqlalchemy.orm import Session
 from .database import get_db
 from .errors import AppError
 from .models import Rol, Usuario
-from .repositories.sql import SqlAuditRepository, SqlProfesorRepository, SqlResenaRepository, SqlUsuarioRepository
+from .repositories.sql import (
+    SqlAuditRepository, SqlLoginRateLimitRepository, SqlProfesorRepository, SqlResenaRepository, SqlUsuarioRepository,
+)
 from .security import leer_token
 from .services.auth_service import AuthService
 from .services.busqueda_service import BusquedaService
@@ -39,7 +41,7 @@ def requiere_roles(*roles: Rol):
 
 
 def get_auth_service(db: Session = Depends(get_db)) -> AuthService:
-    return AuthService(SqlUsuarioRepository(db), SqlAuditRepository(db))
+    return AuthService(SqlUsuarioRepository(db), SqlAuditRepository(db), SqlLoginRateLimitRepository(db))
 
 
 def get_busqueda_service(db: Session = Depends(get_db)) -> BusquedaService:
@@ -51,8 +53,7 @@ def get_consulta_service(db: Session = Depends(get_db)) -> ConsultaService:
 
 
 def get_resena_service(db: Session = Depends(get_db)) -> ResenaService:
-    repo, audit = SqlResenaRepository(db), SqlAuditRepository(db)
-    return ResenaService(repo, SqlProfesorRepository(db), ModeracionService(repo, audit))
+    return ResenaService(SqlResenaRepository(db), SqlProfesorRepository(db))
 
 
 def get_moderacion_service(db: Session = Depends(get_db)) -> ModeracionService:

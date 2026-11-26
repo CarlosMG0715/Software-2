@@ -1,18 +1,23 @@
-import math
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 
 from ..config import settings
 from ..errors import AppError
 from ..models import Rol, Usuario
 from ..repositories.interfaces import ConflictoError
-from ..repositories.sql import SqlAuditRepository, SqlUsuarioRepository
-from ..security import crear_token, hash_password, verificar_password
+from ..repositories.sql import SqlAuditRepository, SqlLoginRateLimitRepository, SqlUsuarioRepository
+from ..security import crear_token, hash_ip, hash_password, verificar_password
 
 
 class AuthService:
-    def __init__(self, usuarios: SqlUsuarioRepository, auditoria: SqlAuditRepository):
+    def __init__(
+        self,
+        usuarios: SqlUsuarioRepository,
+        auditoria: SqlAuditRepository,
+        limites_login: SqlLoginRateLimitRepository,
+    ):
         self.usuarios = usuarios
         self.auditoria = auditoria
+        self.limites_login = limites_login
 
     def registrar(self, nombre: str, correo: str, password: str, acepta_ley: bool) -> dict:
         nombre = nombre.strip()
@@ -33,23 +38,20 @@ class AuthService:
         self.auditoria.registrar("ACEPTACION_LEY_1581", f"usuario:{usuario.id}")
         return {"mensaje": "Cuenta creada. Bienvenido/a.", **self._crear_sesion(usuario)}
 
-    def login(self, correo: str, password: str) -> dict:
-        usuario = self.usuarios.buscar_por_correo(correo.strip().lower())
+    def login(self, correo: str, password: str, ip_cliente: str) -> dict:
         ahora = datetime.now(timezone.utc)
-        if usuario and usuario.bloqueado_hasta and usuario.bloqueado_hasta > ahora:
-            minutos = max(1, math.ceil((usuario.bloqueado_hasta - ahora).total_seconds() / 60))
-            raise AppError(423, f"Cuenta bloqueada temporalmente por intentos fallidos. Intenta de nuevo en {minutos} min.")
+        segundos_ventana = settings.login_ventana_minutos * 60
+        inicio_ventana = datetime.fromtimestamp(
+            int(ahora.timestamp()) // segundos_ventana * segundos_ventana,
+            tz=timezone.utc,
+        )
+        intentos = self.limites_login.registrar_intento(hash_ip(ip_cliente), inicio_ventana)
+        if intentos > settings.login_max_intentos_por_ip:
+            raise AppError(429, "Demasiados intentos desde esta conexión. Intenta de nuevo más tarde.")
+
+        usuario = self.usuarios.buscar_por_correo(correo.strip().lower())
         if not usuario or not verificar_password(password, usuario.password_hash):
-            if usuario:
-                usuario.intentos_fallidos += 1
-                if usuario.intentos_fallidos >= settings.max_intentos:
-                    usuario.bloqueado_hasta = ahora + timedelta(minutes=settings.minutos_bloqueo)
-                    usuario.intentos_fallidos = 0
-                self.usuarios.guardar(usuario)
             raise AppError(401, "Correo o contraseña incorrectos.")
-        usuario.intentos_fallidos = 0
-        usuario.bloqueado_hasta = None
-        self.usuarios.guardar(usuario)
         return self._crear_sesion(usuario)
 
     def actualizar_perfil(self, usuario: Usuario, nombre: str, correo: str) -> dict:

@@ -2,20 +2,18 @@ from ..errors import AppError
 from ..models import ESTADOS_PUBLICOS, EstadoResena, Reporte, Resena, Usuario, VotoUtilidad
 from ..repositories.interfaces import ConflictoError, IProfesorRepository, IResenaRepository
 from ..schemas import ResenaCrear, ResenaEditar
-from ..security import hash_anonimo
-from .moderacion_service import ModeracionService
+from ..security import hash_seudonimo
 from .serializadores import resena_a_dict, serializar_lista
 
 
 class ResenaService:
-    def __init__(self, repo: IResenaRepository, profesores: IProfesorRepository, moderacion: ModeracionService):
+    def __init__(self, repo: IResenaRepository, profesores: IProfesorRepository):
         self.repo = repo
         self.profesores = profesores
-        self.moderacion = moderacion
 
     def _propia(self, usuario: Usuario, resena_id: int) -> Resena:
         r = self.repo.buscar_por_id(resena_id)
-        if not r or r.autor_hash != hash_anonimo(usuario.id):
+        if not r or r.autor_hash != hash_seudonimo(usuario.id):
             raise AppError(404, "La reseña no existe.")
         return r
 
@@ -29,13 +27,13 @@ class ResenaService:
         oferta = self.profesores.buscar_oferta(datos.oferta_id)
         if not oferta:
             raise AppError(404, "La oferta académica no existe.", "oferta_id")
-        autor = hash_anonimo(usuario.id)
+        autor = hash_seudonimo(usuario.id)
         if self.repo.existe_para_autor(autor, oferta.profesor_id, oferta.asignatura_codigo, oferta.periodo):
             raise AppError(409, "Ya calificaste a este docente en esta materia y periodo.", "oferta_id")
         r = Resena(
             oferta_id=oferta.id, autor_hash=autor, claridad=datos.claridad, exigencia=datos.exigencia,
             puntualidad=datos.puntualidad, recomienda=datos.recomienda, comentario=datos.comentario,
-            tags=datos.tags, estado=EstadoResena.VISIBLE.value,
+            tags=datos.tags, estado=EstadoResena.PENDIENTE.value,
         )
         try:
             self.repo.guardar(r)
@@ -49,8 +47,7 @@ class ResenaService:
             raise AppError(403, "Esta reseña ya no se puede editar.")
         r.claridad, r.exigencia, r.puntualidad = datos.claridad, datos.exigencia, datos.puntualidad
         r.recomienda, r.comentario, r.tags = datos.recomienda, datos.comentario, datos.tags
-        if r.estado == EstadoResena.APROBADA.value:  # una edición vuelve a quedar sujeta a moderación
-            r.estado = EstadoResena.VISIBLE.value
+        r.estado = EstadoResena.PENDIENTE.value
         self.repo.guardar(r)
         return resena_a_dict(r, incluir_estado=True)
 
@@ -58,11 +55,11 @@ class ResenaService:
         self.repo.eliminar(self._propia(usuario, resena_id))
 
     def mias(self, usuario: Usuario) -> list[dict]:
-        return serializar_lista(self.repo, self.repo.buscar_por_autor(hash_anonimo(usuario.id)), incluir_estado=True)
+        return serializar_lista(self.repo, self.repo.buscar_por_autor(hash_seudonimo(usuario.id)), incluir_estado=True)
 
     def votar(self, usuario: Usuario, resena_id: int, es_util: bool) -> dict:
         r = self._publica(resena_id)
-        uh = hash_anonimo(usuario.id)
+        uh = hash_seudonimo(usuario.id)
         if self.repo.existe_voto(r.id, uh):
             raise AppError(409, "Ya votaste esta reseña.")
         try:
@@ -74,14 +71,12 @@ class ResenaService:
 
     def reportar(self, usuario: Usuario, resena_id: int, motivo: str) -> dict:
         r = self._publica(resena_id)
-        rh = hash_anonimo(usuario.id)
+        rh = hash_seudonimo(usuario.id)
         if self.repo.existe_reporte(r.id, rh):
             raise AppError(409, "Ya reportaste esta reseña.")
         try:
             self.repo.agregar_reporte(Reporte(resena_id=r.id, reportante_hash=rh, motivo=motivo))
         except ConflictoError:
             raise AppError(409, "Ya reportaste esta reseña.")
-        r.suscribir(self.moderacion)   # Observer
-        r.notificar_reporte()          # Reseña -> ModeracionService.actualizar
-        self.repo.guardar(r)           # commit de reporte + posible ocultamiento + auditoría
+        self.repo.guardar(r)
         return {"mensaje": "Reporte enviado. Gracias por ayudar a moderar."}

@@ -1,31 +1,19 @@
 from ..errors import AppError
-from ..models import ESTADOS_PUBLICOS, EstadoResena, Resena, Usuario
+from ..models import EstadoResena, Usuario
 from ..repositories.interfaces import IResenaRepository
 from ..repositories.sql import SqlAuditRepository
 from .serializadores import resena_a_dict
 
-UMBRAL_REPORTES = 5
-
 
 class ModeracionService:
-    """Observer de Resena: oculta la reseña al alcanzar 5 reportes de usuarios distintos."""
+    """Gestiona aprobaciones previas y reportes enviados por la comunidad."""
 
     def __init__(self, resenas: IResenaRepository, auditoria: SqlAuditRepository):
         self.resenas = resenas
         self.auditoria = auditoria
 
-    # --- Observer ---
-    def actualizar(self, resena: Resena) -> None:
-        if resena.estado not in ESTADOS_PUBLICOS:
-            return
-        # (resena_id, reportante_hash) es PK: cada reporte es de un usuario distinto.
-        if self.resenas.contar_reportes(resena.id) >= UMBRAL_REPORTES:
-            resena.estado = EstadoResena.OCULTA.value
-            self.auditoria.registrar(f"OCULTAR_AUTOMATICO resena #{resena.id} ({UMBRAL_REPORTES} reportes)", "sistema", commit=False)
-
-    # --- Casos de uso de moderación ---
-    def reportadas(self) -> list[dict]:
-        lista = self.resenas.reportadas()
+    def cola(self) -> list[dict]:
+        lista = self.resenas.cola_moderacion()
         motivos = self.resenas.reportes_de([r.id for r in lista])
         resumen = self.resenas.votos_resumen([r.id for r in lista])
         items = [

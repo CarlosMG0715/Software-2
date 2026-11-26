@@ -20,9 +20,15 @@ def verificar_password(password: str, password_hash: str) -> bool:
         return False
 
 
-def hash_anonimo(usuario_id: int) -> str:
-    """Identificador irreversible del autor (HMAC con sal secreta). Nunca se expone."""
-    return hmac.new(settings.hash_salt.encode(), f"usuario:{usuario_id}".encode(), hashlib.sha256).hexdigest()
+def hash_seudonimo(usuario_id: int) -> str:
+    """Seudonimiza el ID con una clave privada del servidor, no con el HASH_SALT heredado."""
+    mensaje = f"resena:autor:usuario:{usuario_id}".encode()
+    return hmac.new(settings.secret_key.encode(), mensaje, hashlib.sha256).hexdigest()
+
+
+def hash_ip(ip: str) -> str:
+    """Evita almacenar direcciones IP en claro en los contadores de intentos."""
+    return hmac.new(settings.secret_key.encode(), ip.encode(), hashlib.sha256).hexdigest()
 
 
 def crear_token(sub: int, proposito: str, minutos: int, **extra) -> str:

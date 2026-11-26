@@ -1,11 +1,14 @@
 from typing import Any, Optional, Sequence
+from datetime import datetime, timedelta, timezone
 
 from sqlalchemy import and_, case, delete, exists, func, select
+from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from ..models import (
-    ESTADOS_PUBLICOS, Asignatura, AuditLog, EstadoResena, Oferta, Profesor, Reporte, Resena, Usuario, VotoUtilidad,
+    ESTADOS_PUBLICOS, Asignatura, AuditLog, EstadoResena, LoginRateLimit, Oferta, Profesor, Reporte, Resena,
+    Usuario, VotoUtilidad,
 )
 from .interfaces import ConflictoError, IProfesorRepository, IResenaRepository
 
@@ -92,16 +95,13 @@ class SqlResenaRepository(IResenaRepository):
         return self.db.get(Reporte, (resena_id, reportante_hash)) is not None
 
     def agregar_reporte(self, reporte: Reporte) -> None:
-        # Solo flush: el commit lo hace quien cierre la operación (tras notificar a los observadores).
+        # Flush first so uniqueness conflicts can be converted to a domain error.
         self.db.add(reporte)
         try:
             self.db.flush()
         except IntegrityError:
             self.db.rollback()
             raise ConflictoError()
-
-    def contar_reportes(self, resena_id: int) -> int:
-        return self.db.scalar(select(func.count()).select_from(Reporte).where(Reporte.resena_id == resena_id)) or 0
 
     def limpiar_reportes(self, resena_id: int) -> None:
         self.db.execute(delete(Reporte).where(Reporte.resena_id == resena_id))
@@ -113,16 +113,47 @@ class SqlResenaRepository(IResenaRepository):
                 resultado[rid].append(motivo)
         return resultado
 
-    def reportadas(self) -> list[Resena]:
+    def cola_moderacion(self) -> list[Resena]:
         q = (
             select(Resena)
             .where(
-                Resena.estado.in_([EstadoResena.VISIBLE.value, EstadoResena.APROBADA.value, EstadoResena.OCULTA.value]),
-                exists().where(Reporte.resena_id == Resena.id),
+                (Resena.estado == EstadoResena.PENDIENTE.value)
+                | (
+                    Resena.estado.in_([EstadoResena.VISIBLE.value, EstadoResena.APROBADA.value, EstadoResena.OCULTA.value])
+                    & exists().where(Reporte.resena_id == Resena.id)
+                ),
             )
             .order_by(Resena.creada.desc())
         )
         return list(self.db.scalars(q))
+
+
+class SqlLoginRateLimitRepository:
+    """Persists fixed-window login counters so limits apply across app workers."""
+
+    def __init__(self, db: Session):
+        self.db = db
+
+    def registrar_intento(self, ip_hash: str, window_start: datetime) -> int:
+        statement = pg_insert(LoginRateLimit).values(
+            ip_hash=ip_hash, window_start=window_start, attempts=1
+        )
+        statement = statement.on_conflict_do_update(
+            index_elements=[LoginRateLimit.ip_hash, LoginRateLimit.window_start],
+            set_={"attempts": LoginRateLimit.attempts + 1},
+        ).returning(LoginRateLimit.attempts)
+        try:
+            attempts = self.db.scalar(statement)
+            self.db.execute(
+                delete(LoginRateLimit).where(
+                    LoginRateLimit.window_start < datetime.now(timezone.utc) - timedelta(days=1)
+                )
+            )
+            self.db.commit()
+            return int(attempts or 0)
+        except Exception:
+            self.db.rollback()
+            raise
 
 
 class SqlProfesorRepository(IProfesorRepository):

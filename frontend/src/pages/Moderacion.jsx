@@ -9,7 +9,7 @@ export default function Moderacion() {
   const toast = useToast();
 
   const cargar = () => {
-    api("/moderacion/reportadas").then(setItems).catch((e) => toast(e.detail));
+    api("/moderacion/cola").then(setItems).catch((e) => toast(e.detail));
     api("/moderacion/auditoria").then(setAudit).catch(() => {});
   };
   useEffect(cargar, []);
@@ -24,13 +24,13 @@ export default function Moderacion() {
   return (
     <>
       <h1>Moderación</h1>
-      <h2>Reseñas reportadas</h2>
-      {items.length === 0 ? <p>No hay reseñas reportadas.</p> : (
+      <h2>Cola de revisión</h2>
+      {items.length === 0 ? <p>No hay reseñas pendientes ni reportadas.</p> : (
         <ul className="lista">
           {items.map((r) => (
             <TarjetaResena key={r.id} r={r} acciones={
               <>
-                <p><span className={"estado " + r.estado}>{r.estado}</span> · {r.num_reportes} reportes: {r.motivos.join(" | ")}</p>
+                <p><span className={"estado " + r.estado}>{r.estado}</span> · {r.num_reportes} reportes{r.motivos.length ? `: ${r.motivos.join(" | ")}` : ""}</p>
                 <div className="fila">
                   <button onClick={() => accion(r, "aprobar")}>Aprobar</button>
                   <button onClick={() => accion(r, "rechazar")}>Rechazar</button>
